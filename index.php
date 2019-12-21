@@ -15,6 +15,7 @@
             echo "<tr><td><a href='cities.php?id=".$value["region_id"]."'>".$value["title_ru"]."</a></td>";
         }
         ?>
+		
     </table>
     </body>
 </html>

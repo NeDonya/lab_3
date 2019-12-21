@@ -32,6 +32,7 @@ foreach ($countries as $key => $title) {
     </tr>";
 }
 echo "</table>";
+
 ?>
 <br><br><br>
 <h4 align="center">

@@ -39,6 +39,7 @@ for ($i = 1; $i <= $count / $limit; $i++) {
     <?
 }
 ?>
+
 <br><br><br>
 <button onclick="window.location.href = 'index.php';">К областям</button>
 </body>
