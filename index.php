@@ -5,11 +5,9 @@
     </head>
     <body>
     <?php
-        $dbConnect = pg_connect("host=127.0.0.1 port=5432 dbname=testdb user=postgres");
-
-        $query = pg_query($dbConnect,
-            "SELECT title_ru, region_id FROM _regions WHERE country_id = 2 ORDER BY title_ru");
-        $result = pg_fetch_all($query);
+        $dsn = new PDO("pgsql:host=localhost;dbname=testdb;user=postgres;password=''");
+        $sql = "SELECT title_ru, region_id from _regions where country_id=2";
+        $result = $dsn->query($sql);
     ?>
     <table align='center'>
         <?php

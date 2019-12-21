@@ -5,41 +5,41 @@
 </head>
 <body>
 <?php
-$dbConnect = pg_connect("host=127.0.0.1 port=5432 dbname=testdb user=postgres");
-
-if(isset($_GET['page'])) {
-    $page = $_GET['page'];
-} else {
-    $page = 1;
-}
 $id = $_GET['id'];
+$dsn = new PDO("pgsql:host=localhost;dbname=testdb;user=postgres;password=''");
 
-$limit = 40;
-$offset = ($page - 1) * $limit;
+$limit = 3;
+$page = 1;
+if ($_GET['page']) {
+    $page = $_GET['page'];
+}
+$offset = ($page-1)*$limit;
+$sql = "SELECT count(*) from _cities where region_id=:id";
+$stmt = $dsn->prepare($sql);
+$stmt->bindParam(':id', $id, PDO::PARAM_INT);
+$stmt->execute();
+$res = $stmt->fetch();
+$count = $res['count'];
+$sql = "SELECT title_ru, city_id from _cities where region_id=:id order by title_ru limit :limit offset :offset";
+$sth = $dsn->prepare($sql);
+$sth->bindParam(':limit', $limit, PDO::PARAM_INT);
+$sth->bindParam(':id', $id, PDO::PARAM_INT);
+$sth->bindParam(':offset', $offset, PDO::PARAM_INT);
+$sth->execute();
+$countries = $sth->fetchAll();
+echo "<table align='center'>";
 
-$query = pg_query($dbConnect,
-    "SELECT title_ru, city_id FROM _cities WHERE region_id=$id AND country_id = 2 ORDER BY title_ru LIMIT $limit OFFSET $offset");
-$result = pg_fetch_all($query);
-?>
-<table align='center'>
-    <?php
-foreach ($result as $city) {
-    echo "<tr><td><a href='languages.php?id=" . $city["city_id"] . "'>" . $city["title_ru"] . "</a></td>";
+foreach ($countries as $cit) {
+    echo "<tr><td><a href='langcity.php?id=" . $cit["city_id"] . "'>" . $cit["title_ru"] . "</a></td>";
+}
+echo "</table>";
+for ($i = 1; $i <= $count / $limit; $i++) {
+    ?>
+    <a href="/cities.php?id=<?php echo $id ?>&page=<?php echo $i ?>"><?php echo $i ?> </a>
+    <?
 }
 ?>
-</table>
-    <?php
-$countQuery = pg_query($dbConnect,
-    "SELECT count(city_id) as count FROM _cities WHERE region_id=$id");
-$count = pg_fetch_assoc($countQuery)['count'];
-$pagesCount = ceil($count / $limit);
-for ($i = 1; $i <= $pagesCount; $i++) {
-?>
-<a href="/cities.php?id=<?php echo $id ?>&page=<?php echo $i ?>"><?php echo $i ?> </a>
-<?
-}
-?>
-<br>
+<br><br><br>
 <button onclick="window.location.href = 'index.php';">К областям</button>
 </body>
 </html>
